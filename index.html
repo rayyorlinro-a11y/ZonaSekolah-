@@ -1,245 +1,59 @@
 <!DOCTYPE html>
 <html>
 <head>
-<meta charset="UTF-8">
-<title>Zona Sekolah</title>
-
-<style>
-body {
-  margin: 0;
-  font-family: Arial;
-  background: white;
-  color: #0f172a;
-}
-
-header {
-  background: #0f172a;
-  color: white;
-  padding: 15px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.menu-icon {
-  font-size: 24px;
-  cursor: pointer;
-}
-
-#menu {
-  background: #0f172a;
-  display: none;
-  flex-direction: column;
-  padding: 10px;
-}
-
-#menu a {
-  color: white;
-  text-decoration: none;
-  padding: 10px 0;
-  border-bottom: 1px solid #06b6d4;
-}
-
-section {
-  padding: 20px;
-  display: none;
-}
-
-.active {
-  display: block;
-}
-
-button {
-  background: #0f172a;
-  color: #06b6d4;
-  padding: 10px 15px;
-  border: none;
-  margin-top: 10px;
-  cursor: pointer;
-}
-
-button:hover {
-  background: #06b6d4;
-  color: white;
-}
-
-input, select, textarea {
-  width: 100%;
-  padding: 8px;
-  margin: 8px 0;
-}
-
-.card {
-  border: 1px solid #ddd;
-  padding: 15px;
-  margin: 15px 0;
-}
-
-.green { color: green; }
-.yellow { color: orange; }
-.red { color: red; }
-
-.comment {
-  background: #f3f4f6;
-  padding: 8px;
-  margin-top: 5px;
-  font-size: 14px;
-}
-</style>
+  <title>Form Laporan Sekolah</title>
+  <link rel="stylesheet" href="style.css">
 </head>
-
 <body>
 
-<header>
-  <div>Website Zona Sekolah</div>
-  <div class="menu-icon" onclick="toggleMenu()">☰</div>
-</header>
+<h1>Lapor Zona Sekolah</h1>
 
-<div id="menu">
-  <a onclick="showPage('home')">Home</a>
-  <a onclick="showPage('zona')">Zona Sekolah</a>
-  <a onclick="showPage('report')">Kirim Laporan</a>
-  <a onclick="showPage('kontak')">Kontak Person</a>
-  <a onclick="showPage('tentang')">Tentang</a>
-</div>
-
-<section id="home" class="active">
-  <h2>Selamat Datang di Website Zona Sekolah</h2>
-  <p>
-  Website ini membantu siswa melihat kondisi suatu  sekolah berdasarkan laporan laporan secara anonim.
-  </p>
-
-  <button onclick="showPage('zona')">Cek Zona Sekolah</button>
-  <button onclick="showPage('report')">Kirim Laporan</button>
-</section>
-
-<section id="report">
-  <h2>Kirim Laporan</h2>
-
-  <input type="text" id="namaSekolah" placeholder="Nama Sekolah">
-
-  <select id="kategori">
-    <option>Pelecehan</option>
-    <option>Bullying</option>
-    <option>Tenaga Kerja</option>
-    <option>Fasilitas Sekolah</option>
-  </select>
-
-  <textarea id="isiLaporan" placeholder="Ada masalah apa di sekolah tersebut?"></textarea>
-
-  <button onclick="kirimLaporan()">Kirim</button>
-</section>
-
-<section id="zona">
-  <h2>Zona Sekolah</h2>
-  <div id="daftarZona"></div>
-</section>
-
-<section id="kontak">
-  <h2>Contact Person</h2>
-  <p>Rayyan - 088905652305
-  <p>Nizam  - 085187915077
-</section>
-
-<section id="tentang">
-  <h2>Tentang Website</h2>
-  <p>Website ini dibuat untuk membantu siswa mendapat gambaran kondisi sekolah melalui laporan anonim.
-  </p>
-</section>
-
-<script>
-function toggleMenu() {
-  var menu = document.getElementById("menu");
-  menu.style.display = menu.style.display === "flex" ? "none" : "flex";
-}
-
-function showPage(pageId) {
-  var sections = document.querySelectorAll("section");
-  sections.forEach(sec => sec.classList.remove("active"));
-  document.getElementById(pageId).classList.add("active");
-  document.getElementById("menu").style.display = "none";
-}
-</script>
+<form id="laporForm">
+  <label>Nama Sekolah:</label>
+  <input type="text" id="namaSekolah" required><br><br>
+  
+  <label>Masalah / Catatan:</label>
+  <textarea id="masalah" required></textarea><br><br>
+  
+  <button type="submit">Kirim Laporan</button>
+</form>
 
 <script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-app.js";
-import { 
-  getFirestore, 
-  collection, 
-  addDoc, 
-  getDocs, 
-  query, 
-  where 
-} from "https://www.gstatic.com/firebasejs/12.9.0/firebase-firestore.js";
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
 const firebaseConfig = {
-  apiKey: "AIzaSyARcQwprB8BCHPq6y8P7oAlJdxIA2hXxUU",
-  authDomain: "zona-sekolah-9.firebaseapp.com",
-  projectId: "zona-sekolah-9",
-  storageBucket: "zona-sekolah-9.firebasestorage.app",
-  messagingSenderId: "107650888317",
-  appId: "1:107650888317:web:c98be385e23704d2ce3714"
+  apiKey: "ISI_API_KEY",
+  authDomain: "PROJECT_ID.firebaseapp.com",
+  projectId: "PROJECT_ID",
+  storageBucket: "PROJECT_ID.appspot.com",
+  messagingSenderId: "SENDER_ID",
+  appId: "APP_ID"
 };
 
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
-// 🔥 KIRIM LAPORAN (STATUS PENDING)
-window.kirimLaporan = async function() {
-  const sekolah = document.getElementById("namaSekolah").value;
-  const kategori = document.getElementById("kategori").value;
-  const isi = document.getElementById("isiLaporan").value;
+const form = document.getElementById("laporForm");
 
-  if (!sekolah || !isi) {
-    alert("isi dulu woy");
-    return;
-  }
+form.addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const nama = document.getElementById("namaSekolah").value;
+  const masalah = document.getElementById("masalah").value;
 
   try {
     await addDoc(collection(db, "laporan"), {
-      sekolah: sekolah,
-      kategori: kategori,
-      isi: isi,
-      status: "pending",
-      createdAt: new Date()
+      namaSekolah: nama,
+      masalah: masalah,
+      status: "pending"
     });
-
-    alert("laporan masuk, menunggu verifikasi 🔎");
-    document.getElementById("namaSekolah").value = "";
-    document.getElementById("isiLaporan").value = "";
-
+    alert("Laporan terkirim!");
+    form.reset();
   } catch (err) {
-    console.error(err);
-    alert("error, cek console");
+    alert("Error: " + err.message);
   }
-};
-
-
-// 🔥 TAMPILKAN YANG SUDAH APPROVED AJA
-async function tampilkanZona() {
-  const daftarZona = document.getElementById("daftarZona");
-  daftarZona.innerHTML = "";
-
-  const q = query(
-    collection(db, "laporan"),
-    where("status", "==", "approved")
-  );
-
-  const querySnapshot = await getDocs(q);
-
-  querySnapshot.forEach((doc) => {
-    const data = doc.data();
-
-    daftarZona.innerHTML += `
-      <div class="card">
-        <h3>${data.sekolah}</h3>
-        <p><strong>Kategori:</strong> ${data.kategori}</p>
-        <p>${data.isi}</p>
-      </div>
-    `;
-  });
-}
-
-// otomatis load pas halaman dibuka
-tampilkanZona();
+});
 </script>
+
+</body>
+</html>
