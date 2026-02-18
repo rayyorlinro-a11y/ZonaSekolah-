@@ -1,16 +1,48 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>zona laporan</title>
+  <title>Zona Sekolah</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-  <h1>daftar laporan</h1>
+<h1>Daftar Sekolah</h1>
+<div id="approvedList"></div>
 
-  <div id="listLaporan"></div>
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getFirestore, collection, query, where, getDocs } 
+from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
-  <script type="module" src="script.js"></script>
+const firebaseConfig = {
+  apiKey: "ISI_API_KEY",
+  authDomain: "PROJECT_ID.firebaseapp.com",
+  projectId: "PROJECT_ID",
+  storageBucket: "PROJECT_ID.appspot.com",
+  messagingSenderId: "SENDER_ID",
+  appId: "APP_ID"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+const approvedList = document.getElementById("approvedList");
+
+async function loadApproved() {
+  const q = query(collection(db, "laporan"), where("status", "==", "approved"));
+  const querySnapshot = await getDocs(q);
+
+  approvedList.innerHTML = "";
+  querySnapshot.forEach((docSnap) => {
+    const data = docSnap.data();
+    const div = document.createElement("div");
+    div.innerHTML = `<p><strong>${data.namaSekolah}</strong>: ${data.masalah}</p><hr>`;
+    approvedList.appendChild(div);
+  });
+}
+
+loadApproved();
+</script>
 
 </body>
 </html>
