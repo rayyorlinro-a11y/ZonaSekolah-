@@ -13,6 +13,7 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
+export { db };
 /* ===== KIRIM LAPORAN ===== */
 const form = document.getElementById("formLapor");
 
