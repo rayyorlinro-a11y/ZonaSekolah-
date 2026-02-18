@@ -10,41 +10,48 @@
 <div id="pendingList"></div>
 
 <script type="module">
-import { db } from "./script.js";
-import { collection, query, where, getDocs, updateDoc, doc } 
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getFirestore, collection, query, where, getDocs, updateDoc, doc } 
 from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "ISI_API_KEY",
+  authDomain: "PROJECT_ID.firebaseapp.com",
+  projectId: "PROJECT_ID",
+  storageBucket: "PROJECT_ID.appspot.com",
+  messagingSenderId: "SENDER_ID",
+  appId: "APP_ID"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
 
 const pendingList = document.getElementById("pendingList");
 
 async function loadPending() {
-  const q = query(
-    collection(db, "laporan"),
-    where("status", "==", "pending")
-  );
-
+  const q = query(collection(db, "laporan"), where("status", "==", "pending"));
   const querySnapshot = await getDocs(q);
 
+  pendingList.innerHTML = "";
   querySnapshot.forEach((docSnap) => {
     const data = docSnap.data();
-
     const div = document.createElement("div");
     div.innerHTML = `
-      <p><strong>${data.namaSekolah}</strong></p>
+      <p><strong>${data.namaSekolah}</strong>: ${data.masalah}</p>
       <button onclick="approve('${docSnap.id}')">ACC</button>
       <hr>
     `;
-    
     pendingList.appendChild(div);
   });
 }
 
 window.approve = async (id) => {
-  await updateDoc(doc(db, "laporan", id), {
-    status: "approved"
-  });
-
-  alert("Berhasil di-ACC");
-  location.reload();
+  try {
+    await updateDoc(doc(db, "laporan", id), { status: "approved" });
+    loadPending();
+  } catch (err) {
+    alert("Error: " + err.message);
+  }
 }
 
 loadPending();
