@@ -1,61 +1,114 @@
+
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Admin - ACC Laporan</title>
-  <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8">
+  <title>Admin Panel</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f2f2f2;
+      padding: 20px;
+    }
+    .card {
+      background: white;
+      padding: 15px;
+      margin-bottom: 15px;
+      border-radius: 10px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+    button {
+      padding: 6px 12px;
+      margin-right: 5px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+    .acc {
+      background: #4CAF50;
+      color: white;
+    }
+    .hapus {
+      background: #f44336;
+      color: white;
+    }
+  </style>
 </head>
 <body>
 
-<h2>Daftar Laporan Pending</h2>
-<div id="pendingList"></div>
+<h2>Admin Penilaian Sekolah</h2>
+<div id="dataList"></div>
 
 <script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import { getFirestore, collection, query, where, getDocs, updateDoc, doc } 
-from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+  import { 
+    getFirestore, 
+    collection, 
+    getDocs, 
+    updateDoc, 
+    deleteDoc, 
+    doc 
+  } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
-const firebaseConfig = {
-  apiKey: "AIzaSyARcQwprB8BCHPq6y8P7oAlJdxIA2hXxUU",
-  authDomain: "zona-sekolah-9.firebaseapp.com",
-  projectId: "zona-sekolah-9",
-  storageBucket: "zona-sekolah-9.firebasestorage.app",
-  messagingSenderId: "107650888317",
-  appId: "1:107650888317:web:eacc0d61e5bdbceace3714",
-  measurementId: "G-6MZBZ1W5TE"
-};
+  // 🔥 GANTI INI PAKE CONFIG LU
+  const firebaseConfig = {
+    apiKey: "ISI_API_KEY",
+    authDomain: "ISI_AUTH_DOMAIN",
+    projectId: "ISI_PROJECT_ID",
+    storageBucket: "ISI_STORAGE_BUCKET",
+    messagingSenderId: "ISI_SENDER_ID",
+    appId: "ISI_APP_ID"
+  };
 
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
+  const list = document.getElementById("dataList");
 
-const pendingList = document.getElementById("pendingList");
+  async function loadData() {
+    list.innerHTML = "Loading...";
+    const querySnapshot = await getDocs(collection(db, "penilaian"));
+    list.innerHTML = "";
 
-async function loadPending() {
-  const q = query(collection(db, "laporan"), where("status", "==", "pending"));
-  const querySnapshot = await getDocs(q);
+    querySnapshot.forEach((docSnap) => {
+      const data = docSnap.data();
+      const id = docSnap.id;
 
-  pendingList.innerHTML = "";
-  querySnapshot.forEach((docSnap) => {
-    const data = docSnap.data();
-    const div = document.createElement("div");
-    div.innerHTML = `
-      <p><strong>${data.namaSekolah}</strong>: ${data.masalah}</p>
-      <button onclick="approve('${docSnap.id}')">ACC</button>
-      <hr>
-    `;
-    pendingList.appendChild(div);
-  });
-}
+      list.innerHTML += `
+        <div class="card">
+          <p><b>Nama:</b> ${data.nama || "-"}</p>
+          <p><b>Sekolah:</b> ${data.sekolah || "-"}</p>
+          <p><b>Nilai:</b> ${data.nilai || "-"}</p>
+          <p><b>Status:</b> ${data.status || "pending"}</p>
 
-window.approve = async (id) => {
-  try {
-    await updateDoc(doc(db, "laporan", id), { status: "approved" });
-    loadPending();
-  } catch (err) {
-    alert("Error: " + err.message);
+          <button class="acc" onclick="accData('${id}')">ACC</button>
+          <button class="hapus" onclick="hapusData('${id}')">Hapus</button>
+        </div>
+      `;
+    });
+
+    if (querySnapshot.empty) {
+      list.innerHTML = "Belum ada data.";
+    }
   }
-}
 
-loadPending();
+  window.accData = async function(id) {
+    await updateDoc(doc(db, "penilaian", id), {
+      status: "approved"
+    });
+    alert("Data di-ACC");
+    loadData();
+  }
+
+  window.hapusData = async function(id) {
+    if (confirm("Yakin mau hapus data ini?")) {
+      await deleteDoc(doc(db, "penilaian", id));
+      alert("Data dihapus");
+      loadData();
+    }
+  }
+
+  loadData();
+
 </script>
 
 </body>
